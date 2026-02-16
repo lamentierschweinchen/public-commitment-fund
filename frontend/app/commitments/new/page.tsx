@@ -11,7 +11,6 @@ import { refreshAccount } from '@multiversx/sdk-dapp/utils/account/refreshAccoun
 import { WalletPanel } from '@/components/WalletPanel';
 import { validateCreateCommitmentInput } from '@/lib/create-commitment-validation';
 import { buildCreateCommitmentPayload } from '@/lib/tx';
-import { CommitmentListResponse } from '@/types';
 
 const DEFAULT_COOLDOWN = 86_400;
 
@@ -43,20 +42,6 @@ export default function CreateCommitmentPage() {
     return `If you fail, ${displayAmount} EGLD goes to ${displayRecipient}.`;
   }, [amount, recipient]);
 
-  const getExpectedNextId = async (): Promise<number | null> => {
-    try {
-      const response = await fetch('/api/commitments?limit=1&cursor=0', {
-        cache: 'no-store',
-      });
-      if (!response.ok) return null;
-      const payload = (await response.json()) as CommitmentListResponse;
-      if (!Number.isFinite(payload.total) || payload.total < 0) return null;
-      return payload.total + 1;
-    } catch {
-      return null;
-    }
-  };
-
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -76,7 +61,6 @@ export default function CreateCommitmentPage() {
         useCustomCooldown,
         cooldownInput: cooldown,
       });
-      const expectedId = await getExpectedNextId();
 
       await refreshAccount();
 
@@ -90,7 +74,7 @@ export default function CreateCommitmentPage() {
         cooldownSeconds: validated.cooldownSeconds,
       });
 
-      await sendTransactions({
+      const { error: txError, sessionId } = await sendTransactions({
         transactions: [payload],
         transactionsDisplayInfo: {
           processingMessage: 'Creating commitment...',
@@ -100,12 +84,17 @@ export default function CreateCommitmentPage() {
         redirectAfterSign: false,
       });
 
-      if (expectedId) {
-        router.push(`/commitments/${expectedId}`);
-      } else {
-        router.push('/');
+      if (txError) {
+        setError(txError);
+        return;
       }
-      router.refresh();
+
+      if (sessionId) {
+        // Redirect to home — the toast will show progress.
+        // Don't guess the ID; let the user see it appear after confirmation.
+        router.push('/');
+        router.refresh();
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       setError(message);
@@ -116,6 +105,10 @@ export default function CreateCommitmentPage() {
 
   return (
     <main className="main-shell">
+      <nav className="nav-bar">
+        <Link href="/" className="nav-back">&larr; Home</Link>
+      </nav>
+
       <section className="hero">
         <h1>Create Commitment</h1>
         <p>Set a deadline, stake EGLD, and define exactly where funds go if you fail.</p>

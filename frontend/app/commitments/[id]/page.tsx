@@ -207,6 +207,10 @@ export default function CommitmentDetailPage() {
 
   return (
     <main className="main-shell">
+      <nav className="nav-bar">
+        <Link href="/" className="nav-back">&larr; Home</Link>
+      </nav>
+
       <section className="hero">
         <h1>Commitment Detail</h1>
         <p>Track progress, submit proof before deadline, and resolve after deadline.</p>
@@ -322,11 +326,6 @@ export default function CommitmentDetailPage() {
             <p className="inline-note">Connect wallet to submit proof, finalize, claim, or cancel.</p>
           ) : null}
 
-          <div className="actions-row">
-            <Link href="/" className="btn btn-secondary">
-              Back to landing
-            </Link>
-          </div>
         </section>
       ) : null}
     </main>
