@@ -6,7 +6,7 @@ export const dAppName =
   process.env.NEXT_PUBLIC_DAPP_NAME || 'Public Commitment Fund';
 
 export const walletConnectProjectId =
-  process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '';
+  process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '9b1a9564f91cb659ffe21b73d5c4e2d8';
 
 const allowedEnvironments = ['devnet', 'testnet', 'mainnet'] as const;
 export type MvxEnvironment = (typeof allowedEnvironments)[number];
