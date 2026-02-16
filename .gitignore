@@ -1,0 +1,28 @@
+# Standalone project ignores
+.DS_Store
+*.pem
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Contract artifacts
+contract/target/
+contract/meta/target/
+contract/wasm/target/
+contract/output/
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.test-dist/
+frontend/build/
+frontend/out/
+frontend/.vercel/
+
+# Deploy outputs
+deploy.json
+deploy-*.json
